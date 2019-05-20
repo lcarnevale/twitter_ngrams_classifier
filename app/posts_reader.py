@@ -8,7 +8,7 @@
 """
 
 __copyright__ = 'Copyright 2019, University of Messina'
-__author__ = 'Lorenzo Carnevale <lorenzocarnevale@gmail.com>
+__author__ = 'Lorenzo Carnevale <lorenzocarnevale@gmail.com>'
 __credits__ = ''
 __description__ = ''
 
@@ -88,7 +88,7 @@ class PostsReader:
             "size": len(posts)
         }
 
-    def process(self):
+    def preprocess(self):
         """
         """
         posts_tokenized = list()
@@ -104,3 +104,16 @@ class PostsReader:
             post_tokenized = self.remove_emojies(post_tokenized)
             posts_tokenized.append(post_tokenized)
         return posts_tokenized
+
+    def postprocess(self, samples, classes):
+        """It post processes data.
+
+        Args:
+            samples(list): tokenized strings;
+            classes(list): predicted classes.
+
+        Returns:
+            list: tuples with the sample, class pair.
+        """
+        samples = list(map(lambda x: ' '.join(x), samples))
+        return list(zip(samples, classes))
