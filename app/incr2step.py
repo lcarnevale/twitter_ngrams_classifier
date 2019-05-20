@@ -8,7 +8,7 @@
 """
 
 __copyright__ = 'Copyright 2019, University of Messina'
-__author__ = 'Lorenzo Carnevale <lorenzocarnevale@gmail.com>
+__author__ = 'Lorenzo Carnevale <lorenzocarnevale@gmail.com>'
 __credits__ = ''
 __description__ = ''
 
@@ -133,12 +133,14 @@ class Classifier:
     def run(self):
         """
         """
-        dataset = list()
+        prev_dataset = list()
+        curr_dataset = list()
         for n in self.tests:
             print("START ANALYSIS with ngrams test number: %s" % (n))
 
-            dataset = list()
-            dataset = self.__sentiment(n, dataset)
+            curr_dataset = list()
+            curr_dataset = self.__sentiment(n, curr_dataset)
+            dataset =  prev_dataset + curr_dataset
 
             trainset, testset = train_test_split(dataset, test_size=0.33, random_state=42)
             print('\tVocabulary size %s, trainset %s, testset %s' % (len(dataset),len(trainset),len(testset)))
@@ -152,34 +154,36 @@ class Classifier:
                 setting['scores']['recall'].append(recall_)
                 setting['scores']['f1score'].append(f1score_)
 
+            prev_dataset = curr_dataset
+
     def export(self):
         """
         """
         if not os.path.exists('../results'):
             os.makedirs('../results')
         # save on csv
-        with open('../results/accuracy_notincr.csv', 'w') as f:
+        with open('../results/accuracy_incr2step.csv', 'w') as f:
             writer = csv.writer(f)
             writer.writerow(self.tests)
             # writer.writerow(self.vocabulary_sizes)
             for setting in self.__settings:
                 writer.writerow(setting['scores']['accuracy'])
 
-        with open('../results/precision_notincr.csv', 'w') as f:
+        with open('../results/precision_incr2step.csv', 'w') as f:
             writer = csv.writer(f)
             writer.writerow(self.tests)
             for setting in self.__settings:
                 row = [ score for elem in setting['scores']['precision'] for score in elem.values() ]
                 writer.writerow(row)
 
-        with open('../results/recall_notincr.csv', 'w') as f:
+        with open('../results/recall_incr2step.csv', 'w') as f:
             writer = csv.writer(f)
             writer.writerow(self.tests)
             for setting in self.__settings:
                 row = [ score for elem in setting['scores']['recall'] for score in elem.values() ]
                 writer.writerow(row)
 
-        with open('../results/f1score_notincr.csv', 'w') as f:
+        with open('../results/f1score_incr2step.csv', 'w') as f:
             writer = csv.writer(f)
             writer.writerow(self.tests)
             for setting in self.__settings:

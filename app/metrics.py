@@ -5,7 +5,7 @@
 """
 
 __copyright__ = 'Copyright 2019, University of Messina'
-__author__ = 'Lorenzo Carnevale <lorenzocarnevale@gmail.com>
+__author__ = 'Lorenzo Carnevale <lorenzocarnevale@gmail.com>'
 __credits__ = ''
 __description__ = ''
 
