@@ -8,7 +8,7 @@
 """
 
 __copyright__ = 'Copyright 2019, University of Messina'
-__author__ = 'Lorenzo Carnevale <lorenzocarnevale@gmail.com>
+__author__ = 'Lorenzo Carnevale <lorenzocarnevale@gmail.com>'
 __credits__ = ''
 __description__ = ''
 
@@ -18,10 +18,9 @@ import warnings
 import argparse
 # local libraries
 from posts_reader import PostsReader
-from models.incr import Classifier as IncrClassifier
-from models.incr2step import Classifier as Incr2StepClassifier
-from models.notincr import Classifier as NotIncrClassifier
-
+from incr import Classifier as IncrClassifier
+# from models.incr2step import Classifier as Incr2StepClassifier
+# from models.notincr import Classifier as NotIncrClassifier
 
 
 def main():
@@ -42,21 +41,21 @@ def main():
     with open(options.postset) as f:
         postset = json.load(f)
 
-    tests = [1,2,3,4,5,6,7,8]
-    posts = PostsReader(postset).process()
+    tests = [2,3,4,5]
+    posts = PostsReader(postset).preprocess()
 
     print('Incremental Dataset')
     incr_clf = IncrClassifier(posts, tests)
-    incr_clf.run()
-    incr_clf.export()
-    print('Incremental 2 Steps Dataset')
-    incr2step_clf = Incr2StepClassifier(posts, tests)
-    incr2step_clf.run()
-    incr2step_clf.export()
-    print('Not Incremental Dataset')
-    notincr_clf = NotIncrClassifier(posts, tests)
-    notincr_clf.run()
-    notincr_clf.export()
+    incr_clf.train()
+    # incr_clf.export()
+    # print('Incremental 2 Steps Dataset')
+    # incr2step_clf = Incr2StepClassifier(posts, tests)
+    # incr2step_clf.run()
+    # incr2step_clf.export()
+    # print('Not Incremental Dataset')
+    # notincr_clf = NotIncrClassifier(posts, tests)
+    # notincr_clf.run()
+    # notincr_clf.export()
 
 
 if __name__ == '__main__':
