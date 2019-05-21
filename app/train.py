@@ -18,7 +18,8 @@ import warnings
 import argparse
 # local libraries
 from posts_reader import preprocess
-from incr import Classifier as IncrClassifier
+import classifier as cls
+# from incr import Classifier as IncrClassifier
 # from models.incr2step import Classifier as Incr2StepClassifier
 # from models.notincr import Classifier as NotIncrClassifier
 # thierd parties libraries
@@ -36,31 +37,26 @@ def main():
                         help="Dataset",
                         type=str)
 
+    parser.add_argument("-max", "--ngrammax",
+                        dest="ngram_max",
+                        help="Maximum number of ngrams",
+                        type=int)
+
+    parser.add_argument("-min", "--ngrammin",
+                        dest="ngram_min",
+                        help="Minimum number of ngrams",
+                        type=int)
+
     options = parser.parse_args()
 
 
     with open(options.postset) as f:
         postset = json.load(f)
     df = pd.read_json(options.postset, orient='columns')
-    # View the first ten rows
-    df.head()
+    df.columns = ['samples']
 
-    # posts = preprocess(postset)
-
-    # tests = [2,3,4,5]
-    # print('Incremental Dataset')
-    # incr_clf = IncrClassifier(posts, tests)
-    # incr_clf.train()
-    # incr_clf.export()
-    # print('Incremental 2 Steps Dataset')
-    # incr2step_clf = Incr2StepClassifier(posts, tests)
-    # incr2step_clf.run()
-    # incr2step_clf.export()
-    # print('Not Incremental Dataset')
-    # notincr_clf = NotIncrClassifier(posts, tests)
-    # notincr_clf.run()
-    # notincr_clf.export()
-
+    posts = preprocess(df['samples'])
+    cls.train(posts, options.ngram_min, options.ngram_max)
 
 if __name__ == '__main__':
     main()
