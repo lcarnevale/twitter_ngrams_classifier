@@ -20,7 +20,7 @@ from string import punctuation
 from nltk.tokenize import TweetTokenizer
 
 
-def __remove_urls(self, post):
+def __remove_urls(post):
     """It removes URLs from a string.
 
     Args:
@@ -32,7 +32,7 @@ def __remove_urls(self, post):
     search_key = 'http[s]?://(?:[a-zA-Z]|[0-9]|[$-_@.&+]|[!*\(\),]|(?:%[0-9a-fA-F][0-9a-fA-F]))+'
     return re.sub(search_key, '', post)
 
-def __remove_usernames(self, post):
+def __remove_usernames(post):
     """It deletes usernames from a post.
 
     Args:
@@ -44,7 +44,7 @@ def __remove_usernames(self, post):
     search_key = '@([A-Za-z0-9_]+)'
     return re.sub(search_key, '', post)
 
-def __remove_emojies(self, post_tokenized):
+def __remove_emojies(post_tokenized):
     """It deletes emojies from a post.
 
     Args:
@@ -62,38 +62,37 @@ def __remove_emojies(self, post_tokenized):
             pass
     return new_post_tokenized
 
-def preprocess(self, samples):
+def preprocess(samples):
     """It pre-processes data.
 
     Args:
-        samples(list): set of samples.
+        samples(obj:'pandas.core.series.Series'): set of samples.
 
     Returns:
-        list: cleaned and tokenized samples. It is the result of the
-            preprocessing phase.
+        obj:'pandas.core.series.Series': cleaned and tokenized samples. It
+            is the result of the preprocessing phase.
     """
-    posts_tokenized = list()
-    for post in samples:
+    def process(sample):
         # normalizing text in lowercase
-        post = post.lower()
+        sample = sample.lower()
         # removing URLs
-        post = self.__remove_urls(post)
+        sample = __remove_urls(sample)
         # removing usernames
-        post = self.__remove_usernames(post)
+        sample = __remove_usernames(sample)
         # tokenizing text
-        post_tokenized = TweetTokenizer(strip_handles=True, reduce_len=True).tokenize(post)
+        sample_tokenized = TweetTokenizer(strip_handles=True, reduce_len=True).tokenize(sample)
         # removing twitter stop words
-        post_tokenized = filter(lambda x: x not in ['rt'], post_tokenized)
+        sample_tokenized = filter(lambda x: x not in ['rt'], sample_tokenized)
         # removing punctuations
-        post_tokenized = filter(lambda x: x not in punctuation, post_tokenized)
+        sample_tokenized = filter(lambda x: x not in punctuation, sample_tokenized)
         # removing digits
-        post_tokenized = filter(lambda x: x not in digits, post_tokenized)
+        sample_tokenized = filter(lambda x: x not in digits, sample_tokenized)
         # removing emojies
-        post_tokenized = self.__remove_emojies(post_tokenized)
-        posts_tokenized.append(post_tokenized)
-    return posts_tokenized
+        sample_tokenized = __remove_emojies(sample_tokenized)
+        return sample_tokenized
+    return samples.apply(lambda x: process(x))
 
-def postprocess(self, samples, classes):
+def postprocess(samples, classes):
     """It post-processes data.
 
     Args:
