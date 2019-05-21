@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-"""
+"""Training Application.
 
 .. _Google Python Style Guide
     https://github.com/google/styleguide/blob/gh-pages/pyguide.md
@@ -17,11 +17,12 @@ import json
 import warnings
 import argparse
 # local libraries
-from posts_reader import PostsReader
+from posts_reader import preprocess
 from incr import Classifier as IncrClassifier
 # from models.incr2step import Classifier as Incr2StepClassifier
 # from models.notincr import Classifier as NotIncrClassifier
-
+# thierd parties libraries
+import pandas as pd
 
 def main():
     """
@@ -40,13 +41,16 @@ def main():
 
     with open(options.postset) as f:
         postset = json.load(f)
+    df = pd.read_json(options.postset, orient='columns')
+    # View the first ten rows
+    df.head()
 
-    tests = [2,3,4,5]
-    posts = PostsReader(postset).preprocess()
+    # posts = preprocess(postset)
 
-    print('Incremental Dataset')
-    incr_clf = IncrClassifier(posts, tests)
-    incr_clf.train()
+    # tests = [2,3,4,5]
+    # print('Incremental Dataset')
+    # incr_clf = IncrClassifier(posts, tests)
+    # incr_clf.train()
     # incr_clf.export()
     # print('Incremental 2 Steps Dataset')
     # incr2step_clf = Incr2StepClassifier(posts, tests)
