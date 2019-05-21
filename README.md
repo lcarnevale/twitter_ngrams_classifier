@@ -1,4 +1,6 @@
 # Twitter Ngrams Classifier
+![Alt text](./docs/shields/python-3.6-blue.svg)
+
 A Python implementation of posts' classifier based on ngrams evaluation. It is part of the scientific paper, entitled **Investigating Classification Supervised Learning Approaches for the Identification of Critical Patients' Posts in  a Healthcare Social Network**
 
 **Abstract**: Nowadays, Healthcare Social Networks (HSNs) offer the possibility to enhance patient care and education. However, they also present potential risks for patients due to the possible distribution of poor-quality or wrong information along with their bad interpretation. On one hand doctors and practitioners want to promote the exchange of information among patients about a specific disease, but on the other hand they do not have enough time to read patients' posts and moderate them when required.
