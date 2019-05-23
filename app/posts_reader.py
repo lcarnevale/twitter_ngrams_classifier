@@ -93,14 +93,13 @@ def preprocess(samples):
     return samples.apply(lambda x: process(x))
 
 def postprocess(samples, classes):
-    """It post-processes data.
+    """Post-processes data.
 
     Args:
-        samples(list): tokenized strings;
-        classes(list): predicted classes.
+        samples (list): target samples;
+        classes (list): predicted classes.
 
     Returns:
         list: tuples with the sample, class pair.
     """
-    samples = list(map(lambda x: ' '.join(x), samples))
     return list(zip(samples, classes))

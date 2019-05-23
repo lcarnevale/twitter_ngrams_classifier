@@ -35,70 +35,15 @@ from sklearn.svm import LinearSVC
 from sklearn.model_selection import train_test_split
 
 
-vocabulary_sizes = list()
+classifiers = {
+        "BernoulliNB": BernoulliNB(),
+        "MultinomialNB": MultinomialNB(),
+        "LogisticRegression": LogisticRegression(),
+        "SGDClassifier": SGDClassifier(),
+        "SVC": SVC(),
+        "LinearSVC": LinearSVC()
+}
 
-__settings = [
-    {
-        "name": "BernoulliNB",
-        "classifier": BernoulliNB(),
-        "scores": {
-            "accuracy": list(),
-            "precision": list(),
-            "recall": list(),
-            "f1score": list()
-        }
-    },
-    {
-        "name": "MultinomialNB",
-        "classifier": MultinomialNB(),
-        "scores": {
-            "accuracy": list(),
-            "precision": list(),
-            "recall": list(),
-            "f1score": list()
-        }
-    },
-    {
-        "name": "LogisticRegression",
-        "classifier": LogisticRegression(),
-        "scores": {
-            "accuracy": list(),
-            "precision": list(),
-            "recall": list(),
-            "f1score": list()
-        }
-    },
-    {
-        "name": "SGDClassifier",
-        "classifier": SGDClassifier(),
-        "scores": {
-            "accuracy": list(),
-            "precision": list(),
-            "recall": list(),
-            "f1score": list()
-        }
-    },
-    {
-        "name": "SVC",
-        "classifier": SVC(),
-        "scores": {
-            "accuracy": list(),
-            "precision": list(),
-            "recall": list(),
-            "f1score": list()
-        }
-    },
-    {
-        "name": "LinearSVC",
-        "classifier": LinearSVC(),
-        "scores": {
-            "accuracy": list(),
-            "precision": list(),
-            "recall": list(),
-            "f1score": list()
-        }
-    }
-]
 
 def __generate_features(samples_tokenized, ngram_min, ngram_max):
     """
@@ -134,26 +79,46 @@ def __scores(clf, testset):
     f1score_ = f1score(precision_, recall_)
     return accuracy_, precision_, recall_, f1score_
 
-def train(samples_tokenized, ngram_min, ngram_max):
+def train(samples_tokenized, ngram_min, ngram_max, save=None):
     """
     """
+    info = dict()
+    info['ngrams'] = [ i for i in range(ngram_min, ngram_max) ]
+
+    print('Samples size %s' % (len(samples_tokenized)))
+    print('Generate features...')
     dataset = __generate_features(samples_tokenized, ngram_min, ngram_max)
+    if save:
+        # todo: implement it
+        pass
+    print('Generate features...completed')
+
     trainset, testset = train_test_split(dataset, test_size=0.33, random_state=42)
     print('Vocabulary size %s, trainset %s, testset %s' % (len(dataset),len(trainset),len(testset)))
+    info['vocabulary_sizes'] = len(dataset)
+    info['trainset_sizes'] = len(trainset)
+    info['testset_sizes'] = len(testset)
+    info['scores'] = dict()
 
-    for setting in __settings:
-        classifier = setting['classifier']
-        clf = SklearnClassifier(classifier).train(trainset)
+    for classifier in classifiers.keys():
+        print('%s classifier...' % (classifier))
+        clf = SklearnClassifier(classifiers[classifier]).train(trainset)
+        print('%s classifier...completed!' % (classifier))
         accuracy_, precision_, recall_, f1score_ = __scores(clf, testset)
-        setting['scores']['accuracy'].append(accuracy_)
-        setting['scores']['precision'].append(precision_)
-        setting['scores']['recall'].append(recall_)
-        setting['scores']['f1score'].append(f1score_)
+        info['scores'][classifier] = dict()
+        info['scores'][classifier]['accuracy'] = accuracy_
+        info['scores'][classifier]['precision'] = precision_
+        info['scores'][classifier]['recall'] = recall_
+        info['scores'][classifier]['f1score'] = f1score_
 
-        with open('%s.pickle' % (setting['name']), 'wb') as f:
-            pickle.dump(clf, f)
+        if save:
+            if not os.path.exists('../models/'):
+                os.makedirs('../models/')
+            with open('../models/%s.pickle' % (classifier), 'wb') as f:
+                pickle.dump(clf, f)
+    return info
 
-def predict(samples):
+def predict(samples, classifier):
     """It predicts the input's samples.
 
     Args:
@@ -162,44 +127,7 @@ def predict(samples):
     Returns:
         list(): predicted labels.
     """
-    with open('MultinomialNB.pickle', 'rb') as f:
+    samples = samples.apply(FreqDist)
+    with open(classifier, 'rb') as f:
         cls = pickle.load(f)
-        test = list()
-        for sample in samples:
-            test.append(FreqDist(sample))
-
-        return cls.classify_many(test)
-
-def export():
-    """
-    """
-    if not os.path.exists('../results'):
-        os.makedirs('../results')
-    # save on csv
-    with open('../results/accuracy_incr.csv', 'w') as f:
-        writer = csv.writer(f)
-        writer.writerow(self.tests)
-        # writer.writerow(self.vocabulary_sizes)
-        for setting in self.__settings:
-            writer.writerow(setting['scores']['accuracy'])
-
-    with open('../results/precision_incr.csv', 'w') as f:
-        writer = csv.writer(f)
-        writer.writerow(self.tests)
-        for setting in self.__settings:
-            row = [ score for elem in setting['scores']['precision'] for score in elem.values() ]
-            writer.writerow(row)
-
-    with open('../results/recall_incr.csv', 'w') as f:
-        writer = csv.writer(f)
-        writer.writerow(self.tests)
-        for setting in self.__settings:
-            row = [ score for elem in setting['scores']['recall'] for score in elem.values() ]
-            writer.writerow(row)
-
-    with open('../results/f1score_incr.csv', 'w') as f:
-        writer = csv.writer(f)
-        writer.writerow(self.tests)
-        for setting in self.__settings:
-            row = [ score for elem in setting['scores']['f1score'] for score in elem.values() ]
-            writer.writerow(row)
+    return cls.classify_many(samples)
