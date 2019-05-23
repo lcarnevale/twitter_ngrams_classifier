@@ -17,10 +17,10 @@ import json
 import warnings
 import argparse
 # local libraries
-from posts_reader import PostsReader
-from incr import Classifier as IncrClassifier
-# from incr2step import Classifier as Incr2StepClassifier
-# from notincr import Classifier as NotIncrClassifier
+from posts_reader import postprocess
+import classifier as clf
+# thierd parties libraries
+import pandas as pd
 
 
 def main():
@@ -30,20 +30,22 @@ def main():
 
     parser = argparse.ArgumentParser()
 
+    parser.add_argument("-c", "--clssifier",
+                        dest="classifier",
+                        help="Model file",
+                        type=str)
+
     options = parser.parse_args()
 
-    reader = PostsReader([
+    samples = list({
         'I am not fine today',
         'I want to kill you',
         'What a nice day'
-    ])
-    samples = reader.preprocess()
+    })
+    df = pd.Series(samples)
 
-    clf = IncrClassifier()
-    labels = clf.predict(samples)
-
-    result = reader.postprocess(samples, labels)
-    print(result)
+    labels = clf.predict(df, options.classifier)
+    print(postprocess(samples, labels))
 
 
 if __name__ == '__main__':
