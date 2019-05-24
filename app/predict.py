@@ -30,7 +30,7 @@ def main():
 
     parser = argparse.ArgumentParser()
 
-    parser.add_argument("-c", "--clssifier",
+    parser.add_argument("-c", "--classifier",
                         dest="classifier",
                         help="Model file",
                         type=str)
