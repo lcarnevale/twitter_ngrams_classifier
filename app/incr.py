@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-"""
+"""Training Application.
 
 .. _Google Python Style Guide
     https://github.com/google/styleguide/blob/gh-pages/pyguide.md
@@ -13,200 +13,129 @@ __credits__ = ''
 __description__ = ''
 
 # standard libraries
-import os
-import csv
-import pickle
+import json
+import warnings
+import argparse
 # local libraries
-from metrics import precision_recall
-from metrics import f1score
-# third parties libraries
-from nltk import ngrams
-from nltk import FreqDist
-from nltk.classify import accuracy
-from nltk.classify import SklearnClassifier
-from textblob import TextBlob
-from sklearn.svm import SVC
-from sklearn.naive_bayes import BernoulliNB
-from sklearn.naive_bayes import MultinomialNB
-from sklearn.linear_model import SGDClassifier
-from sklearn.linear_model import LogisticRegression
-from sklearn.svm import LinearSVC
-from sklearn.model_selection import train_test_split
+from posts_reader import preprocess
+import classifier as cls
+# thierd parties libraries
+import pandas as pd
+import matplotlib.pyplot as plt
 
 
-class Classifier:
+# def evalutation():
+#     """
+#     """
+#     if not os.path.exists('../results'):
+#         os.makedirs('../results')
+#     # save on csv
+#     with open('../results/accuracy_incr.csv', 'w') as f:
+#         writer = csv.writer(f)
+#         writer.writerow(self.tests)
+#         # writer.writerow(self.vocabulary_sizes)
+#         for setting in self.__settings:
+#             writer.writerow(setting['scores']['accuracy'])
+#
+#     with open('../results/precision_incr.csv', 'w') as f:
+#         writer = csv.writer(f)
+#         writer.writerow(self.tests)
+#         for setting in self.__settings:
+#             row = [ score for elem in setting['scores']['precision'] for score in elem.values() ]
+#             writer.writerow(row)
+#
+#     with open('../results/recall_incr.csv', 'w') as f:
+#         writer = csv.writer(f)
+#         writer.writerow(self.tests)
+#         for setting in self.__settings:
+#             row = [ score for elem in setting['scores']['recall'] for score in elem.values() ]
+#             writer.writerow(row)
+#
+#     with open('../results/f1score_incr.csv', 'w') as f:
+#         writer = csv.writer(f)
+#         writer.writerow(self.tests)
+#         for setting in self.__settings:
+#             row = [ score for elem in setting['scores']['f1score'] for score in elem.values() ]
+#             writer.writerow(row)
+
+def main():
     """
     """
-    def __init__(self, posts_tokenized=None, tests=None):
-        """
+    parser = argparse.ArgumentParser()
 
-        Args:
-            max_ngrams(list):
-        """
-        self.posts_tokenized = posts_tokenized
-        self.tests = tests
+    parser.add_argument("-v", "--verbose",
+                        dest="verbose",
+                        help="Increase verbosity",
+                        action='store_true')
 
-        self.vocabulary_sizes = list()
+    parser.add_argument("-d", "--postset",
+                        dest="postset",
+                        help="Dataset file path. A CSV file is required.",
+                        type=str)
 
-        self.__settings = [
-            {
-                "name": "BernoulliNB",
-                "classifier": BernoulliNB(),
-                "scores": {
-                    "accuracy": list(),
-                    "precision": list(),
-                    "recall": list(),
-                    "f1score": list()
-                }
-            },
-            {
-                "name": "MultinomialNB",
-                "classifier": MultinomialNB(),
-                "scores": {
-                    "accuracy": list(),
-                    "precision": list(),
-                    "recall": list(),
-                    "f1score": list()
-                }
-            },
-            {
-                "name": "LogisticRegression",
-                "classifier": LogisticRegression(),
-                "scores": {
-                    "accuracy": list(),
-                    "precision": list(),
-                    "recall": list(),
-                    "f1score": list()
-                }
-            },
-            {
-                "name": "SGDClassifier",
-                "classifier": SGDClassifier(),
-                "scores": {
-                    "accuracy": list(),
-                    "precision": list(),
-                    "recall": list(),
-                    "f1score": list()
-                }
-            },
-            {
-                "name": "SVC",
-                "classifier": SVC(),
-                "scores": {
-                    "accuracy": list(),
-                    "precision": list(),
-                    "recall": list(),
-                    "f1score": list()
-                }
-            },
-            {
-                "name": "LinearSVC",
-                "classifier": LinearSVC(),
-                "scores": {
-                    "accuracy": list(),
-                    "precision": list(),
-                    "recall": list(),
-                    "f1score": list()
-                }
-            }
-        ]
+    parser.add_argument("-min", "--ngrammin",
+                        dest="ngram_min",
+                        help="Minimum number of ngrams",
+                        type=int)
 
-    def __sentiment(self, n, dataset):
-        """
-        """
-        for post_tokenized in self.posts_tokenized:
-            for ngram in ngrams(post_tokenized, n):
-                blob = TextBlob(" ".join(ngram))
-                polarity = blob.sentences[0].sentiment.polarity
-                if polarity <= -0.3:
-                    ngram_class = "alarm"
-                elif polarity >= 0.3:
-                    ngram_class = "notalarm"
-                else:
-                    ngram_class = "suspect"
-                dataset.append((FreqDist(ngram), ngram_class))
-        self.vocabulary_sizes.append(len(dataset))
-        return dataset
+    parser.add_argument("-max", "--ngrammax",
+                        dest="ngram_max",
+                        help="Maximum number of ngrams",
+                        type=int)
 
-    def __scores(self, clf, testset):
-        """
-        """
-        accuracy_ = accuracy(clf, testset)
-        precision_, recall_ = precision_recall(clf, testset)
-        f1score_ = f1score(precision_, recall_)
-        return accuracy_, precision_, recall_, f1score_
+    parser.add_argument("-s", "--save",
+                        dest="save",
+                        help="Save",
+                        action='store_true')
 
-    def train(self):
-        """
-        """
-        dataset = list()
-        for n in self.tests:
-            print("START ANALYSIS with ngrams test number: %s" % (n))
+    # parser.add_argument("-a", "--approach",
+    #                     dest="type",
+    #                     help="Select one of the available approaches: incremental (incr); incremental 2 steps (incr2step); not incremental (notincr)",
+    #                     type=str, default='incr')
 
-            dataset = self.__sentiment(n, dataset)
+    options = parser.parse_args()
 
-            trainset, testset = train_test_split(dataset, test_size=0.33, random_state=42)
-            print('\tVocabulary size %s, trainset %s, testset %s' % (len(dataset),len(trainset),len(testset)))
+    if not options.verbose:
+        warnings.filterwarnings("ignore")
 
-            for setting in self.__settings:
-                classifier = setting['classifier']
-                clf = SklearnClassifier(classifier).train(trainset)
-                accuracy_, precision_, recall_, f1score_ = self.__scores(clf, testset)
-                setting['scores']['accuracy'].append(accuracy_)
-                setting['scores']['precision'].append(precision_)
-                setting['scores']['recall'].append(recall_)
-                setting['scores']['f1score'].append(f1score_)
+    # todo: replace with read_csv
+    with open(options.postset) as f:
+        postset = json.load(f)
+    df = pd.read_json(options.postset, orient='columns')
+    df.columns = ['samples']
 
-                with open('%s.pickle' % (setting['name']), 'wb') as f:
-                    pickle.dump(clf, f)
+    posts = preprocess(df['samples'])
 
-    def predict(self, samples):
-        """It predicts the input's samples.
+    import collections
 
-        Args:
-            samples(list): list of tokenized strings.
+    def flatten(d, parent_key='', sep='_'):
+        items = []
+        for k, v in d.items():
+            new_key = parent_key + sep + k if parent_key else k
+            if isinstance(v, collections.MutableMapping):
+                items.extend(flatten(v, new_key, sep=sep).items())
+            else:
+                items.append((new_key, v))
+        return dict(items)
 
-        Returns:
-            list(): predicted labels.
-        """
-        with open('MultinomialNB.pickle', 'rb') as f:
-            cls = pickle.load(f)
-        test = list()
-        for sample in samples:
-            test.append(FreqDist(sample))
 
-        return cls.classify_many(test)
+    scores = list()
+    max_ = options.ngram_min + 1
+    while max_ <= options.ngram_max:
+        score = cls.train(posts, options.ngram_min, max_)
+        scores.append(flatten(score, sep='.'))
+        max_ +=  1
+    df = pd.DataFrame(scores)
+    df.plot(x='ngrams', y=['vocabulary_sizes'])
+    plt.savefig('vocabulary_sizes.png')
+    df.plot(x='ngrams', y=['scores.BernoulliNB.accuracy', 'scores.MultinomialNB.accuracy'])
+    plt.savefig('naive.png')
+    df.plot(x='ngrams', y=['scores.LogisticRegression.accuracy', 'scores.SGDClassifier.accuracy'])
+    plt.savefig('linear.png')
+    df.plot(x='ngrams', y=['scores.SVC.accuracy', 'scores.LinearSVC.accuracy'])
+    plt.savefig('svc.png')
 
-    def export(self):
-        """
-        """
-        if not os.path.exists('../results'):
-            os.makedirs('../results')
-        # save on csv
-        with open('../results/accuracy_incr.csv', 'w') as f:
-            writer = csv.writer(f)
-            writer.writerow(self.tests)
-            # writer.writerow(self.vocabulary_sizes)
-            for setting in self.__settings:
-                writer.writerow(setting['scores']['accuracy'])
 
-        with open('../results/precision_incr.csv', 'w') as f:
-            writer = csv.writer(f)
-            writer.writerow(self.tests)
-            for setting in self.__settings:
-                row = [ score for elem in setting['scores']['precision'] for score in elem.values() ]
-                writer.writerow(row)
 
-        with open('../results/recall_incr.csv', 'w') as f:
-            writer = csv.writer(f)
-            writer.writerow(self.tests)
-            for setting in self.__settings:
-                row = [ score for elem in setting['scores']['recall'] for score in elem.values() ]
-                writer.writerow(row)
-
-        with open('../results/f1score_incr.csv', 'w') as f:
-            writer = csv.writer(f)
-            writer.writerow(self.tests)
-            for setting in self.__settings:
-                row = [ score for elem in setting['scores']['f1score'] for score in elem.values() ]
-                writer.writerow(row)
+if __name__ == '__main__':
+    main()
