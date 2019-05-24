@@ -23,40 +23,6 @@ import classifier as cls
 import pandas as pd
 
 
-# def evalutation():
-#     """
-#     """
-#     if not os.path.exists('../results'):
-#         os.makedirs('../results')
-#     # save on csv
-#     with open('../results/accuracy_incr.csv', 'w') as f:
-#         writer = csv.writer(f)
-#         writer.writerow(self.tests)
-#         # writer.writerow(self.vocabulary_sizes)
-#         for setting in self.__settings:
-#             writer.writerow(setting['scores']['accuracy'])
-#
-#     with open('../results/precision_incr.csv', 'w') as f:
-#         writer = csv.writer(f)
-#         writer.writerow(self.tests)
-#         for setting in self.__settings:
-#             row = [ score for elem in setting['scores']['precision'] for score in elem.values() ]
-#             writer.writerow(row)
-#
-#     with open('../results/recall_incr.csv', 'w') as f:
-#         writer = csv.writer(f)
-#         writer.writerow(self.tests)
-#         for setting in self.__settings:
-#             row = [ score for elem in setting['scores']['recall'] for score in elem.values() ]
-#             writer.writerow(row)
-#
-#     with open('../results/f1score_incr.csv', 'w') as f:
-#         writer = csv.writer(f)
-#         writer.writerow(self.tests)
-#         for setting in self.__settings:
-#             row = [ score for elem in setting['scores']['f1score'] for score in elem.values() ]
-#             writer.writerow(row)
-
 def main():
     """
     """
@@ -98,7 +64,8 @@ def main():
     df.columns = ['samples']
 
     posts = preprocess(df['samples'])
-    cls.train(posts, options.ngram_min, options.ngram_max, save=options.save)
+    scores = cls.train(posts, options.ngram_min, options.ngram_max, save=options.save)
+    print(scores)
 
 if __name__ == '__main__':
     main()
