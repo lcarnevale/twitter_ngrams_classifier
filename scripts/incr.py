@@ -13,6 +13,7 @@ __credits__ = ''
 __description__ = ''
 
 # standard libraries
+import os
 import json
 import warnings
 import argparse
@@ -122,18 +123,26 @@ def main():
     scores = list()
     max_ = options.ngram_min + 1
     while max_ <= options.ngram_max:
+        ngrams = [ i for i in range(options.ngram_min, max_) ]
+        print('Analysis with %s ngrams' % (ngrams))
         score = cls.train(posts, options.ngram_min, max_)
         scores.append(flatten(score, sep='.'))
         max_ +=  1
     df = pd.DataFrame(scores)
-    df.plot(x='ngrams', y=['vocabulary_sizes'])
-    plt.savefig('vocabulary_sizes.png')
-    df.plot(x='ngrams', y=['scores.BernoulliNB.accuracy', 'scores.MultinomialNB.accuracy'])
-    plt.savefig('naive.png')
-    df.plot(x='ngrams', y=['scores.LogisticRegression.accuracy', 'scores.SGDClassifier.accuracy'])
-    plt.savefig('linear.png')
-    df.plot(x='ngrams', y=['scores.SVC.accuracy', 'scores.LinearSVC.accuracy'])
-    plt.savefig('svc.png')
+    if not os.path.exists('../results/'):
+        os.makedirs('../results/')
+    # Naive Bayes accuracy comparison
+    df.plot(x='ngrams', y=['scores.BernoulliNB.accuracy', 'scores.MultinomialNB.accuracy'], legend=True)
+    plt.savefig('../results/naive_accuracy.png')
+    # Linear accuracy comparison
+    df.plot(x='ngrams', y=['scores.LogisticRegression.accuracy', 'scores.SGDClassifier.accuracy'], legend=True)
+    plt.savefig('../results/linear_accuracy.png')
+    # SVC accuracy comparison
+    df.plot(x='ngrams', y=['scores.SVC.accuracy', 'scores.LinearSVC.accuracy'], legend=True)
+    plt.savefig('../results/svc_accuracy.png')
+    # Naive Bayes accuracy comparison
+    df.plot(x='ngrams', y=['scores.BernoulliNB.precision.notalarm', 'scores.BernoulliNB.precision.alarm', 'scores.BernoulliNB.precision.suspect', 'scores.MultinomialNB.precision.notalarm', 'scores.MultinomialNB.precision.alarm', 'scores.MultinomialNB.precision.suspect'], legend=True)
+    plt.savefig('../results/naive_precision.png')
 
 
 
