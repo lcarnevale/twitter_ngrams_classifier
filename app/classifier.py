@@ -83,27 +83,29 @@ def train(samples_tokenized, ngram_min, ngram_max, save=None):
     """
     """
     info = dict()
-    info['ngrams'] = [ i for i in range(ngram_min, ngram_max) ]
+    # info['ngrams'] = [ i for i in range(ngram_min, ngram_max) ]
+    info['ngrams'] = ngram_max -1
 
-    print('Samples size %s' % (len(samples_tokenized)))
-    print('Generate features...')
+
+    # print('Samples size %s' % (len(samples_tokenized)))
+    # print('Generate features...')
     dataset = __generate_features(samples_tokenized, ngram_min, ngram_max)
     if save:
         # todo: implement it
         pass
-    print('Generate features...completed')
+    # print('Generate features...completed')
 
     trainset, testset = train_test_split(dataset, test_size=0.33, random_state=42)
-    print('Vocabulary size %s, trainset %s, testset %s' % (len(dataset),len(trainset),len(testset)))
+    # print('Vocabulary size %s, trainset %s, testset %s' % (len(dataset),len(trainset),len(testset)))
     info['vocabulary_sizes'] = len(dataset)
     info['trainset_sizes'] = len(trainset)
     info['testset_sizes'] = len(testset)
     info['scores'] = dict()
 
     for classifier in classifiers.keys():
-        print('%s classifier...' % (classifier))
+        # print('%s classifier...' % (classifier))
         clf = SklearnClassifier(classifiers[classifier]).train(trainset)
-        print('%s classifier...completed!' % (classifier))
+        # print('%s classifier...completed!' % (classifier))
         accuracy_, precision_, recall_, f1score_ = __scores(clf, testset)
         info['scores'][classifier] = dict()
         info['scores'][classifier]['accuracy'] = accuracy_
