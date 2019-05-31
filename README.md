@@ -9,4 +9,4 @@ In this paper, we investigate and compare different supervised learning classifi
 The paper is an extended, improved version of the paper *Applying Artificial Intelligence in Healthcare Social Networks to Identity Critical Issues in Patients' Posts* presented at *AI4Health 2018 workshop* and published in: *BIOSTEC 2018, Proceedings of the 11th International Joint Conference on Biomedical Engineering Systems and Technologies, Volume 5: HEALTHINF, Funchal, Madeira, Portugal, 19-21 January, 2018, pp. 680-687, ISBN: 978-989-758-281-3, INSTICC, 2018*.
 
 
-By University of Messina
+By **University of Messina**
