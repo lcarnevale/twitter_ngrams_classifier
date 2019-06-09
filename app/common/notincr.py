@@ -25,8 +25,6 @@ from posts_reader import preprocess
 import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
-from scipy.interpolate import spline
-from sklearn.preprocessing import minmax_scale
 
 
 def flatten(d, parent_key='', sep='_'):
