@@ -10,7 +10,7 @@
 __copyright__ = 'Copyright 2019, University of Messina'
 __author__ = 'Lorenzo Carnevale <lorenzocarnevale@gmail.com>'
 __credits__ = ''
-__description__ = 'Incremental Analysis'
+__description__ = 'Not Incremental Analysis'
 
 # standard libraries
 import os
