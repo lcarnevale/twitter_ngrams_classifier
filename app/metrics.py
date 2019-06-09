@@ -1,4 +1,6 @@
 """
+https://github.com/dice-group/gerbil/wiki/Precision,-Recall-and-F1-measure
+https://www.nltk.org/_modules/nltk/metrics/scores.html
 
 .. _Google Python Style Guide
     https://github.com/google/styleguide/blob/gh-pages/pyguide.md
@@ -13,24 +15,29 @@ import collections
 from nltk.metrics import scores
 
 def precision_recall(classifier, testfeats):
-	"""
-	"""
-	refsets = collections.defaultdict(set)
-	testsets = collections.defaultdict(set)
+    refsets = collections.defaultdict(set)
+    testsets = collections.defaultdict(set)
 
-	for i, (feats, label) in enumerate(testfeats):
-		refsets[label].add(i)
-		observed = classifier.classify(feats)
-		testsets[observed].add(i)
+    for i, (feats, label) in enumerate(testfeats):
+        refsets[label].add(i)
+        observed = classifier.classify(feats)
+        testsets[observed].add(i)
+        # print('%s %s' % (label, observed))
 
-	precisions = {}
-	recalls = {}
+    precisions = {}
+    recalls = {}
 
-	for label in classifier.labels():
-		precisions[label] = scores.precision(refsets[label], testsets[label])
-		recalls[label] = scores.recall(refsets[label], testsets[label])
+    print(classifier.labels())
+    for label in classifier.labels():
 
-	return precisions, recalls
+        precisions[label] = scores.precision(refsets[label], testsets[label])
+        if precisions[label]:
+            print(label)
+            print(refsets[label])
+            print(testsets[label])
+        recalls[label] = scores.recall(refsets[label], testsets[label])
+
+    return precisions, recalls
 
 def f1score(recalls, precisions):
 	"""
