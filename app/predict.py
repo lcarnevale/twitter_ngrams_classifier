@@ -30,6 +30,11 @@ def main():
 
     parser = argparse.ArgumentParser()
 
+    parser.add_argument("-u", "--utterance",
+                        dest="utterance",
+                        help="Utterance target",
+                        type=str)
+
     parser.add_argument("-c", "--classifier",
                         dest="classifier",
                         help="Model file",
@@ -38,9 +43,7 @@ def main():
     options = parser.parse_args()
 
     samples = list({
-        'I am not fine today',
-        'I want to kill you',
-        'What a nice day'
+        options.utterance
     })
     df = pd.Series(samples)
 
