@@ -65,7 +65,6 @@ def main():
 
     posts = preprocess(df['samples'])
     scores = cls.train(posts, options.ngram_min, options.ngram_max, save=options.save)
-    print(scores)
 
 if __name__ == '__main__':
     main()
