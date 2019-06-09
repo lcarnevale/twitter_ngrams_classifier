@@ -1,15 +1,15 @@
 # standard libraries
 import pickle
 # local libraries
-from app.posts_reader import postprocess
-import app.classifier as clf
+from common.posts_reader import postprocess
+import common.classifier as clf
 # thierd parties libraries
 import pandas as pd
 from nltk import FreqDist
 from flask import request
 from flask_restful import Resource
 
-class Predict(Resource):
+class Classify(Resource):
     """
     """
     def post(self):

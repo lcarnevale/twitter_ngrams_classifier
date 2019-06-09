@@ -17,8 +17,12 @@ import os
 import csv
 import pickle
 # local libraries
-from .metrics import precision_recall
-from .metrics import f1score
+try:
+    from metrics import f1score
+    from metrics import precision_recall
+except:
+    from .metrics import f1score
+    from .metrics import precision_recall
 # third parties libraries
 import pandas as pd
 from nltk import ngrams

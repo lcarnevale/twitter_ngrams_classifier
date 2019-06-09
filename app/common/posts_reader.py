@@ -103,3 +103,11 @@ def postprocess(samples, classes):
         list: tuples with the sample, class pair.
     """
     return list(zip(samples, classes))
+
+
+
+def main():
+    pass
+
+if __name__ == '__main__':
+    main()
