@@ -16,6 +16,6 @@ RUN apt update && \
 COPY app /opt/app
 
 # copy config files
-EXPOSE 5000
+EXPOSE 5002
 
 CMD ["python3", "app.py"]
