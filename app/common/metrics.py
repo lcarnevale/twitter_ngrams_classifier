@@ -27,14 +27,8 @@ def precision_recall(classifier, testfeats):
     precisions = {}
     recalls = {}
 
-    print(classifier.labels())
     for label in classifier.labels():
-
         precisions[label] = scores.precision(refsets[label], testsets[label])
-        if precisions[label]:
-            print(label)
-            print(refsets[label])
-            print(testsets[label])
         recalls[label] = scores.recall(refsets[label], testsets[label])
 
     return precisions, recalls

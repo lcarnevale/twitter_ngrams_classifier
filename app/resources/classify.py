@@ -3,7 +3,7 @@ import pickle
 # local libraries
 from common.posts_reader import postprocess
 import common.classifier as clf
-# thierd parties libraries
+# third parties libraries
 import pandas as pd
 from nltk import FreqDist
 from flask import request

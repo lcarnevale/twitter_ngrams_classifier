@@ -90,7 +90,6 @@ def train(samples_tokenized, ngram_min, ngram_max, save=None):
     # info['ngrams'] = [ i for i in range(ngram_min, ngram_max) ]
     info['ngrams'] = ngram_max -1
 
-
     # print('Samples size %s' % (len(samples_tokenized)))
     # print('Generate features...')
     dataset = __generate_features(samples_tokenized, ngram_min, ngram_max)
