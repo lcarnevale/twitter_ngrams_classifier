@@ -88,41 +88,55 @@ def main():
     df = pd.DataFrame(scores)
     if not os.path.exists('../results/'):
         os.makedirs('../results/')
+    with open("scores-notincr.json", 'w') as f:
+        json.dump(scores, f)
+
 
     # Naive Bayes accuracy comparison
+    plt.figure()
     df.plot(x='ngrams', y=['scores.BernoulliNB.accuracy', 'scores.MultinomialNB.accuracy'], title='SVC Accuracy - Not Incremental', legend=True)
     plt.savefig('../results/naive_accuracy_notincr.png')
     # Naive Bayes precision comparison
+    plt.figure()
     df.plot(x='ngrams', y=['scores.BernoulliNB.precision.notalarm', 'scores.BernoulliNB.precision.alarm', 'scores.BernoulliNB.precision.suspect', 'scores.MultinomialNB.precision.notalarm', 'scores.MultinomialNB.precision.alarm', 'scores.MultinomialNB.precision.suspect'], title='Naive Bayes Precision - Not Incremental', legend=True)
     plt.savefig('../results/naive_precision_notincr.png')
     # Naive Bayes recall comparison
+    plt.figure()
     df.plot(x='ngrams', y=['scores.BernoulliNB.recall.notalarm', 'scores.BernoulliNB.recall.alarm', 'scores.BernoulliNB.recall.suspect', 'scores.MultinomialNB.recall.notalarm', 'scores.MultinomialNB.recall.alarm', 'scores.MultinomialNB.recall.suspect'], title='Naive Bayes Recall - Not Incremental', legend=True)
     plt.savefig('../results/naive_recall_notincr.png')
     # Naive Bayes f1score comparison
+    plt.figure()
     df.plot(x='ngrams', y=['scores.BernoulliNB.f1score.notalarm', 'scores.BernoulliNB.f1score.alarm', 'scores.BernoulliNB.f1score.suspect', 'scores.MultinomialNB.f1score.notalarm', 'scores.MultinomialNB.f1score.alarm', 'scores.MultinomialNB.f1score.suspect'], title='Naive Bayes F1Score - Not Incremental', legend=True)
     plt.savefig('../results/naive_f1score_notincr.png')
     # Linear accuracy comparison
+    plt.figure()
     df.plot(x='ngrams', y=['scores.LogisticRegression.accuracy', 'scores.SGDClassifier.accuracy'], title='SVC Accuracy - Not Incremental', legend=True)
     plt.savefig('../results/linear_accuracy_notincr.png')
     # Linear precision comparison
+    plt.figure()
     df.plot(x='ngrams', y=['scores.LogisticRegression.precision.notalarm', 'scores.LogisticRegression.precision.alarm', 'scores.LogisticRegression.precision.suspect', 'scores.SGDClassifier.precision.notalarm', 'scores.SGDClassifier.precision.alarm', 'scores.SGDClassifier.precision.suspect'], title='Linear Precision - Not Incremental', legend=True)
     plt.savefig('../results/linear_precision_notincr.png')
     # Linear recall comparison
+    plt.figure()
     df.plot(x='ngrams', y=['scores.LogisticRegression.recall.notalarm', 'scores.LogisticRegression.recall.alarm', 'scores.LogisticRegression.recall.suspect', 'scores.SGDClassifier.recall.notalarm', 'scores.SGDClassifier.recall.alarm', 'scores.SGDClassifier.recall.suspect'], title='Linear Recall - Not Incremental', legend=True)
     plt.savefig('../results/linear_recall_notincr.png')
     # Linear f1score comparison
+    plt.figure()
     df.plot(x='ngrams', y=['scores.LogisticRegression.f1score.notalarm', 'scores.LogisticRegression.f1score.alarm', 'scores.LogisticRegression.f1score.suspect', 'scores.SGDClassifier.f1score.notalarm', 'scores.SGDClassifier.f1score.alarm', 'scores.SGDClassifier.f1score.suspect'], title='Linear F1Score - Not Incremental', legend=True)
     plt.savefig('../results/linear_f1score_notincr.png')
     # SVC accuracy comparison
+    plt.figure()
     df.plot(x='ngrams', y=['scores.SVC.accuracy', 'scores.LinearSVC.accuracy'], title='SVC Accuracy - Not Incremental', legend=True)
     plt.savefig('../results/svc_accuracy_notincr.png')
     # SVC precision comparison
     df.plot(x='ngrams', y=['scores.SVC.precision.notalarm', 'scores.SVC.precision.alarm', 'scores.SVC.precision.suspect', 'scores.LinearSVC.precision.notalarm', 'scores.LinearSVC.precision.alarm', 'scores.LinearSVC.precision.suspect'], title='SVC Precision - Not Incremental', legend=True)
     plt.savefig('../results/svc_precision_notincr.png')
     # SVC recall comparison
+    plt.figure()
     df.plot(x='ngrams', y=['scores.SVC.recall.notalarm', 'scores.SVC.precision.alarm', 'scores.SVC.recall.suspect', 'scores.LinearSVC.recall.notalarm', 'scores.LinearSVC.recall.alarm', 'scores.LinearSVC.recall.suspect'], title='SVC Recall - Not Incremental', legend=True)
     plt.savefig('../results/svc_recall_notincr.png')
     # SVC f1score comparison
+    plt.figure()
     df.plot(x='ngrams', y=['scores.SVC.f1score.notalarm', 'scores.SVC.f1score.alarm', 'scores.SVC.f1score.suspect', 'scores.LinearSVC.f1score.notalarm', 'scores.LinearSVC.f1score.alarm', 'scores.LinearSVC.f1score.suspect'], title='SVC F1Score - Not Incremental', legend=True)
     plt.savefig('../results/svc_f1score_notincr.png')
 
